@@ -6,6 +6,9 @@ const port = 3000
 var path = require('path');
 var sanitizeHtml = require('sanitize-html');
 var qs = require('querystring');
+var bodyParser = require('body-parser');
+
+app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/', (request, response) => {
     fs.readdir('./data', function(error, filelist){
@@ -64,20 +67,27 @@ app.get('/create', function (request, response) {
 })
 
 app.post('/create_process', function (request, response) {
-  var body = '';
-  request.on('data', function(data){
-      body = body + data;
+  // var body = '';
+  // request.on('data', function(data){
+  //     body = body + data;
+  // });
+  // request.on('end', function(){
+  //     var post = qs.parse(body);
+  //     var title = post.title;
+  //     var description = post.description;
+  //     fs.writeFile(`data/${title}`, description, 'utf8', function(err){
+  //       response.writeHead(302, {Location: `/?id=${title}`});
+  //       response.end();
+  //     });
+  // });
+  var post = request.body;
+  var title = post.title;
+  var description = post.description;
+  fs.writeFile(`data/${title}`, description, 'utf8', function(err){
+    response.writeHead(302, {Location: `/?id=${title}`});
+    response.end();
   });
-  request.on('end', function(){
-      var post = qs.parse(body);
-      var title = post.title;
-      var description = post.description;
-      fs.writeFile(`data/${title}`, description, 'utf8', function(err){
-        response.writeHead(302, {Location: `/?id=${title}`});
-        response.end();
-      });
-  });
-})
+});
 
 app.get('/update/:pageId', function (request, response) {
   fs.readdir('./data', function(error, filelist){
@@ -106,20 +116,14 @@ app.get('/update/:pageId', function (request, response) {
 })
 
 app.post('/update_process', function (request, response){
-  var body = '';
-  request.on('data', function(data){
-      body = body + data;
+  var post = request.body;
+  var title = post.title;
+  var description = post.description;
+  fs.writeFile(`data/${title}`, description, 'utf8', function(err){
+    response.writeHead(302, {Location: `/?id=${title}`});
+    response.end();
   });
-  request.on('end', function(){
-      var post = qs.parse(body);
-      var title = post.title;
-      var description = post.description;
-      fs.writeFile(`data/${title}`, description, 'utf8', function(err){
-        response.writeHead(302, {Location: `/?id=${title}`});
-        response.end();
-      })
-  });
-})
+});
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
